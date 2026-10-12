@@ -17,12 +17,12 @@ public class Car {
     private Integer dailyPrice;
 
     @Column
-    private Byte[] image;
+    private byte[] image;
 
     @Column
     private Boolean active;
 
-    public Car(Integer id, String type, Integer dailyPrice, Byte[] image, Boolean active) {
+    public Car(Integer id, String type, Integer dailyPrice, byte[] image, Boolean active) {
         this.id = id;
         this.type = type;
         this.dailyPrice = dailyPrice;
@@ -54,11 +54,11 @@ public class Car {
         this.dailyPrice = dailyPrice;
     }
 
-    public Byte[] getImage() {
+    public byte[] getImage() {
         return image;
     }
 
-    public void setImage(Byte[] image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 

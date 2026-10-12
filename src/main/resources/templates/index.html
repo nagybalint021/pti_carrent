@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <p th:if="${simpleResponseDTO != null}" th:text="${simpleResponseDTO.getResponse()}"></p>
+
+    <h2>Select Date</h2>
+    <form action="/cars" method="get">
+        <label>Start:
+            <input type="date" name="startDate" />
+        </label>
+        <label>End:
+            <input type="date" name="endDate" />
+        </label>
+        <br>
+        <br>
+        <input type="submit" value="Submit" />
+    </form>
+    <br>
+
+    <div th:if="${freeCarsDTO != null}">
+        <h2>Select Car</h2>
+        <form action="/cars/res/start" method="get">
+            <label>Car:
+                <select name="carId">
+                    <option th:each="car : ${freeCarsDTO.getFreeCars()}" th:value="${car.getId()}" th:text="${car.getType()}"></option>
+                </select>
+            </label>
+            <input type="hidden" name="startDate" th:value="${freeCarsDTO.getResDateDTO().getStartDate()}" />
+            <input type="hidden" name="endDate" th:value="${freeCarsDTO.getResDateDTO().getEndDate()}" />
+            <br><br>
+            <input type="submit" value="Submit">
+        </form>
+        <br>
+
+        <h2>Available Cars:</h2>
+        <div th:each="car : ${freeCarsDTO.getFreeCars()}">
+            <h3 th:text="'Type: ' + ${car.getType()}"></h3>
+            <h3 th:text="'Price: ' + ${car.getPrice()}"></h3>
+            <img th:src="'data:image/png;base64, ' + ${car.getImage()}" alt="Car Image">
+        </div>
+    </div>
+</body>
+</html>
