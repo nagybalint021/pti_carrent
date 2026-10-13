@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
 public class AppService {
@@ -56,6 +59,79 @@ public class AppService {
         return dto;
     }
 
+    private boolean checkApiKeys(String apiKey) {
+        return apiKeys.contains(apiKey);
+    }
+
+    public AdminPageDTO getAdminPage(String apiKey, String response) {
+        if (checkApiKeys(apiKey)) {
+            return new AdminPageDTO(
+                    apiKey,
+                    response,
+                    StreamSupport.stream(reservationRepo.findAll().spliterator(), false).map(this::convertReservationToDTO).toList(),
+                    StreamSupport.stream(carRepo.findAll().spliterator(), false).map(this::convertCarToDTO).toList()
+            );
+        }
+
+        return null;
+    }
+
+    public EditCarDTO startCarEdit(String apiKey, Integer carId) {
+        EditCarDTO dto = null;
+
+        if (checkApiKeys(apiKey)) {
+            Optional<Car> carOpt = carRepo.findById(carId);
+
+            if (carOpt.isPresent()) {
+                CarDTO carDTO = convertCarToDTO(carOpt.get());
+
+                dto = new EditCarDTO(apiKey, carDTO.getId(), carDTO.getType(), carDTO.getPrice(), carDTO.getImage(), carDTO.getActive());
+            }
+        }
+
+        return dto;
+    }
+
+    public AdminPageDTO finishCarEdit(EditCarDTO editCarDTO) {
+        String message = "Failed to edit car!";
+
+        if (checkApiKeys(editCarDTO.getApiKey())) {
+            Optional<Car> carOpt = carRepo.findById(editCarDTO.getSelectedCar().getId());
+
+            if (carOpt.isPresent()) {
+                Car car = carOpt.get();
+
+                car.setType(editCarDTO.getSelectedCar().getType());
+                car.setDailyPrice(editCarDTO.getSelectedCar().getPrice());
+                car.setActive(editCarDTO.getSelectedCar().getActive());
+
+                carRepo.save(car);
+
+                message = "Successfully edited car!";
+            }
+        }
+
+        return getAdminPage(editCarDTO.getApiKey(), message);
+    }
+
+    public AdminPageDTO addNewCar(String apiKey, NewCarDTO newCarDTO) throws IOException {
+        String message = "Failed to add new car!";
+
+        if (checkApiKeys(apiKey)) {
+            carRepo.save(new Car(
+                    null,
+                    newCarDTO.getType(),
+                    newCarDTO.getPrice(),
+                    newCarDTO.getImage().getBytes(),
+                    newCarDTO.getActive()
+            ));
+
+            message = "Successfully added car!";
+        }
+
+        return getAdminPage(apiKey, message);
+    }
+
     private boolean doReservation(UserResDTO userResDTO) {
         boolean result = false;
 
@@ -90,6 +166,20 @@ public class AppService {
                 userResDTO.getUserSelectionDTO().getResDateDTO().getStartDate(),
                 userResDTO.getUserSelectionDTO().getResDateDTO().getEndDate(),
                 userResDTO.getUserSelectionDTO().getTotalPrice()
+        );
+    }
+
+    private ReservationDTO convertReservationToDTO(Reservation res) {
+        return new ReservationDTO(
+                res.getId(),
+                res.getName(),
+                res.getEmail(),
+                res.getAddress(),
+                res.getPhone(),
+                res.getCarId(),
+                res.getPrice(),
+                res.getStartDate(),
+                res.getEndDate()
         );
     }
 }

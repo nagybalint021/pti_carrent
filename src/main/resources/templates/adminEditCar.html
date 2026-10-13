@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Car</title>
+</head>
+<body>
+    <h2>Edit Car</h2>
+    <form action="/admin/car/edit/finish" method="post">
+        <input type="hidden" name="apiKey" th:value="${editCarDTO.getApiKey()}"/>
+        <input type="hidden" name="carId" th:value="${editCarDTO.getSelectedCar().getId()}">
+        <label>Type:
+            <input type="text" name="type" th:placeholder="${editCarDTO.getSelectedCar().getType()}" th:value="${editCarDTO.getSelectedCar().getType()}">
+        </label>
+        <br>
+        <label>Price:
+            <input type="number" name="price" th:placeholder="${editCarDTO.getSelectedCar().getPrice()}" th:value="${editCarDTO.getSelectedCar().getPrice()}">
+        </label>
+        <br>
+        <label>Active:
+            <select name="active">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </label>
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

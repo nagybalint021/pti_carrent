@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+<body>
+    <div th:if="${adminPageDTO != null}">
+        <p th:text="${adminPageDTO?.getResponse()}"></p>
+
+        <h2>Reservations:</h2>
+        <table>
+            <tr>
+                <th>Car ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Price</th>
+            </tr>
+            <tr th:each="res : ${adminPageDTO.getAllReservation()}">
+                <td th:text="${res.getUserResDTO().getUserSelectionDTO().getCarId()}"></td>
+                <td th:text="${res.getUserResDTO().getName()}"></td>
+                <td th:text="${res.getUserResDTO().getEmail()}"></td>
+                <td th:text="${res.getUserResDTO().getAddress()}"></td>
+                <td th:text="${res.getUserResDTO().getPhone()}"></td>
+                <td th:text="${res.getUserResDTO().getUserSelectionDTO().getResDateDTO().getStartDate()}"></td>
+                <td th:text="${res.getUserResDTO().getUserSelectionDTO().getResDateDTO().getEndDate()}"></td>
+                <td th:text="${res.getUserResDTO().getUserSelectionDTO().getTotalPrice()}"></td>
+            </tr>
+        </table>
+        <br>
+
+        <h2>Edit Car</h2>
+        <form action="/admin/car/edit/start" method="get">
+            <input type="hidden" name="apiKey" th:value="${adminPageDTO.getApiKey()}">
+            <label>Car:
+                <select name="carId">
+                    <option th:each="car : ${adminPageDTO.getAllCar()}" th:value="${car.getId()}" th:text="${car.getType()}"></option>
+                </select>
+            </label>
+            <br><br>
+            <input type="submit" value="Edit Car">
+        </form>
+        <br>
+
+        <h2>Add new Car</h2>
+        <form action="/admin/car/new" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="apiKey" th:value="${adminPageDTO.getApiKey()}">
+            <label>Type:
+                <input type="text" name="type" />
+            </label>
+            <br>
+            <label>Price:
+                <input type="number" name="price" />
+            </label>
+            <br>
+            <label>Active:
+                <select name="active">
+                    <option value="true" selected>Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+            </label>
+            <br>
+            <label>Image:
+                <input type="file" name="image" accept="image/*" />
+            </label>
+            <br><br>
+            <input type="submit" value="Add Car">
+        </form>
+    </div>
+</body>
+</html>
