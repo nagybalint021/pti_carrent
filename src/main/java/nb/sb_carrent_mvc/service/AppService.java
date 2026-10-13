@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -130,6 +131,12 @@ public class AppService {
         }
 
         return getAdminPage(apiKey, message);
+    }
+
+    public APICarsResponseDTO getFreeCarsAPI(LocalDate startDate, LocalDate endDate) {
+        return new APICarsResponseDTO(
+                carRepo.findAvailableCars(startDate, endDate).stream().map(this::convertCarToDTO).toList()
+        );
     }
 
     private boolean doReservation(UserResDTO userResDTO) {
